@@ -8,7 +8,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-class Receiver {
+public class Receiver {
     private String name;
     private String phone;
 }

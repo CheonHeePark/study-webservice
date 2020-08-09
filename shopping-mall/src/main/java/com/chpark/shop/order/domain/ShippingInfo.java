@@ -8,6 +8,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
+public
 class ShippingInfo {
     private String address;
     private String message;

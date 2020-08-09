@@ -32,6 +32,8 @@ public class Order {
         // TODO 예외가 발생할 수 있는 코드를 생성자에서 처리하는것이 맞는가?
         setOrderLines(orderLines);
         setShippingInfo(shippingInfo);
+        // TODO 주문 전 상태가 꼭 있어야 하는지? 주문 생성 시점 => 이미 주문된것이 아닐까?
+        state = OrderState.BEFORE;
     }
 
     /**
@@ -96,6 +98,7 @@ public class Order {
      * 전체 주문금액을 계산한다.
      */
     private void calculateTotalAmounts() {
+        // 총 주문금액은 OrderLines를 통해 값이 계산된다. (주문 애그리거트 내부의 주문항목 객체를 조합하여 총주문금액 계산 기능이 완성된다.)
         this.totalAmounts = orderLines.stream()
                 .map(OrderLine::getAmounts)
                 .reduce(0, (a, b) -> a + b);
