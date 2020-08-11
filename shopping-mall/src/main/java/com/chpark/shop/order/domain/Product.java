@@ -7,5 +7,5 @@ import lombok.Getter;
  */
 @Getter
 class Product {
-    String id;
+    private String id;
 }

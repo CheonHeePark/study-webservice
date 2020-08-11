@@ -1,8 +1,14 @@
 package com.chpark.shop.order.domain;
 
+import com.chpark.shop.common.model.Money;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.util.List;
 
 /**
@@ -15,13 +21,19 @@ import java.util.List;
  * TODO 필요없는 주석은 개발 이후 삭제한다.
  */
 @Getter
+@Access(AccessType.FIELD)
+@Entity
+@Table(name = "TB_Order")
 public class Order {
     // TODO 주문번호는 DB에서 생성할것인지, Entity에서 생성할것인지, 사용자 정의값을 사용할것인지 고민해보자.
     private String orderNumber;
     private OrderState state;
     private ShippingInfo shippingInfo;
     private List<OrderLine> orderLines;
-    private int totalAmounts;
+    private Money totalAmounts;
+
+    // Hibernate를 사용할경우, 프록시 객체가 상속받기 위해 기본생성자 필요 ---> TODO SpringData-JPA에서는 괜찮은지? 확인필요!
+    protected Order() {}
 
     /**
      * 주문할 때, 주문항목과 배송지정보는 필수값이므로 생성자에서 필수항목들을 전달받도록 한다.
@@ -99,9 +111,13 @@ public class Order {
      */
     private void calculateTotalAmounts() {
         // 총 주문금액은 OrderLines를 통해 값이 계산된다. (주문 애그리거트 내부의 주문항목 객체를 조합하여 총주문금액 계산 기능이 완성된다.)
-        this.totalAmounts = orderLines.stream()
-                .map(OrderLine::getAmounts)
-                .reduce(0, (a, b) -> a + b);
+        this.totalAmounts = new Money(
+                orderLines.stream()
+                        .map(OrderLine::getAmounts)
+                        .mapToInt(money -> money.getValue())
+                        .reduce(0, (a, b) -> a + b)
+        );
+
     }
 
     @Override
